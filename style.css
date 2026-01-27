@@ -78,6 +78,16 @@ nav { padding: 20px 0; border-bottom: 1px solid var(--border); background: #fff;
     .nav-links a { display: block; }
     .btn-contact { width: 100%; text-align: center; margin-top: 10px; }
     
+    .about-flex { grid-template-columns: 1fr; gap: 40px; margin-top: 30px; }
+    .abilities-box { position: static; top: auto; padding: 35px; margin-top: 20px; order: 2; }
+    .about-text { order: 1; }
+    
+    .core-abilities-container { grid-template-columns: 1fr; gap: 25px; margin-top: 40px; }
+    .core-ability-item { padding: 30px; gap: 18px; }
+    .ability-icon { width: 55px; height: 55px; font-size: 1.6rem; }
+    .ability-content h3 { font-size: 1.1rem; }
+    .ability-content p { font-size: 0.9rem; }
+    
     .hero { grid-template-columns: 1fr; padding: 80px 20px 50px 20px; gap: 40px; }
     .hero h1 { font-size: 2.2rem; margin: 15px 0; }
     .hero > .hero-text > p { font-size: 1.05rem; margin-bottom: 25px; }
@@ -102,6 +112,17 @@ nav { padding: 20px 0; border-bottom: 1px solid var(--border); background: #fff;
 @media (max-width: 480px) {
     .logo { font-size: 1.2rem; }
     .nav-links { max-width: 100%; }
+    
+    .about-flex { gap: 25px; }
+    .abilities-box { padding: 25px; margin-top: 20px; }
+    .ability-list li { font-size: 0.85rem; margin-bottom: 12px; }
+    
+    #core-abilities { padding: 200px 0 70px 0; }
+    .core-abilities-container { grid-template-columns: 1fr; gap: 18px; margin-top: 30px; }
+    .core-ability-item { padding: 24px; gap: 15px; flex-direction: column; align-items: center; text-align: center; }
+    .ability-icon { width: 50px; height: 50px; font-size: 1.5rem; }
+    .ability-content h3 { font-size: 1rem; }
+    .ability-content p { font-size: 0.85rem; line-height: 1.5; }
     
     .hero { padding: 80px 16px 45px 16px; gap: 25px; }
     .hero h1 { font-size: 1.65rem; line-height: 1.25; margin: 18px 0; }
@@ -170,6 +191,57 @@ nav { padding: 20px 0; border-bottom: 1px solid var(--border); background: #fff;
 }
 
 .ability-list i { color: var(--primary); }
+
+/* Core Abilities Container */
+.core-abilities-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 35px;
+    margin-top: 50px;
+}
+
+.core-ability-item {
+    background: #fff;
+    border: 2px solid var(--border);
+    padding: 40px;
+    border-radius: 15px;
+    transition: all 0.4s ease;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.core-ability-item:hover {
+    border-color: var(--primary);
+    box-shadow: 0 20px 40px rgba(14, 165, 233, 0.15);
+    transform: translateY(-8px);
+}
+
+.ability-icon {
+    flex-shrink: 0;
+    width: 60px;
+    height: 60px;
+    background: #e0f2fe;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: var(--primary);
+}
+
+.ability-content h3 {
+    color: var(--dark);
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.ability-content p {
+    color: var(--text);
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
 
 .exp-list {
     list-style: none;
