@@ -1,9 +1,9 @@
-🚀 My Portfolio
+ My Portfolio
 Welcome to my personal portfolio repository! This project showcases my journey as a developer, the technical skills I’ve mastered, and the projects I’ve built.
 
-✨ Live Demo Link (Note: Replace this link if your GitHub Pages URL is different)
+ Live Demo Link (Note: Replace this link if your GitHub Pages URL is different)
 
-🛠 Tech Stack
+ Tech Stack
 This portfolio was built using a clean and modern tech stack to ensure performance and responsiveness:
 
 HTML5: Semantic structure for SEO and accessibility.
@@ -14,7 +14,7 @@ JavaScript (ES6+): Interactive elements and dynamic content.
 
 FontAwesome: For professional iconography.
 
-🌟 Features
+ Features
 Responsive Design: Fully optimized for mobile, tablet, and desktop screens.
 
 Project Showcase: A curated list of my best work with links to source code and live demos.
