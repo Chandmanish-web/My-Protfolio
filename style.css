@@ -657,15 +657,29 @@ nav {
     transition: all 0.3s ease;
 }
 
-.p-card:hover p {
+.project-tools {
+    color: var(--text);
+    font-size: 0.9rem;
+    margin: 8px 0 0;
+    line-height: 1.5;
+}
+
+.p-card:hover p,
+.p-card:hover .project-tools {
     color: var(--darker);
+}
+
+.p-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 18px;
 }
 
 .project-link { 
     display: inline-flex; 
     align-items: center; 
     gap: 8px; 
-    margin-top: 15px; 
     color: var(--primary); 
     font-weight: 600; 
     text-decoration: none; 
