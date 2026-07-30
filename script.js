@@ -4,195 +4,155 @@ const themeToggle = document.getElementById("themeToggle");
 const themeIcon = document.getElementById("themeIcon");
 const scrollProgress = document.getElementById("scrollProgress");
 const backToTop = document.getElementById("backToTop");
-const hireBtn = document.getElementById("hireBtn");
-const contactModal = document.getElementById("contactModal");
-const closeBtn = document.querySelector(".close");
-const floatingMenu = document.getElementById('floatingMenu');
-const menuItems = document.querySelectorAll('.menu-item');
-const sections = document.querySelectorAll('section[id], header[id]');
+const typingText = document.getElementById("typingText");
+const filterButtons = document.querySelectorAll(".filter-btn");
+const projectCards = document.querySelectorAll(".project-card");
+const form = document.getElementById("contactForm");
+const formStatus = document.getElementById("formStatus");
+const cursorGlow = document.querySelector(".cursor-glow");
 
-if (hamburger && navLinks) {
-    hamburger.addEventListener("click", function() {
-        hamburger.classList.toggle("active");
-        navLinks.classList.toggle("active");
-    });
+const roles = ["React", "Node.js", "Python", "beautiful interfaces", "practical products"];
+let roleIndex = 0;
 
-    navLinks.querySelectorAll("a").forEach(link => {
-        link.addEventListener("click", function() {
-            hamburger.classList.remove("active");
-            navLinks.classList.remove("active");
-        });
-    });
+function setTheme(theme) {
+  document.body.classList.toggle("light-theme", theme === "light");
+  localStorage.setItem("portfolio-theme", theme);
+  if (themeIcon) {
+    themeIcon.className = theme === "light" ? "fa-solid fa-sun" : "fa-solid fa-moon";
+  }
 }
 
-if (themeToggle && themeIcon) {
-    const storedTheme = localStorage.getItem('portfolio-theme');
-    if (storedTheme === 'dark') {
-        document.body.classList.add('dark-theme');
-        themeIcon.className = 'fas fa-sun';
-    }
-
-    themeToggle.addEventListener('click', () => {
-        document.body.classList.toggle('dark-theme');
-        const isDark = document.body.classList.contains('dark-theme');
-        themeIcon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
-        localStorage.setItem('portfolio-theme', isDark ? 'dark' : 'light');
-    });
+function initTheme() {
+  const storedTheme = localStorage.getItem("portfolio-theme");
+  const prefersLight = window.matchMedia("(prefers-color-scheme: light)").matches;
+  const theme = storedTheme || (prefersLight ? "light" : "dark");
+  setTheme(theme);
 }
 
-const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-};
+function toggleMobileMenu() {
+  hamburger?.classList.toggle("active");
+  navLinks?.classList.toggle("open");
+}
 
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
+function closeMobileMenu() {
+  hamburger?.classList.remove("active");
+  navLinks?.classList.remove("open");
+}
+
+function typeRole() {
+  if (!typingText) return;
+  typingText.textContent = roles[roleIndex];
+  roleIndex = (roleIndex + 1) % roles.length;
+}
+
+function initTypingEffect() {
+  typeRole();
+  setInterval(typeRole, 1800);
+}
+
+function initRevealObserver() {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
         if (entry.isIntersecting) {
-            entry.target.classList.add('active');
-            if (entry.target.classList.contains('counter')) {
-                animateCounter(entry.target);
-            }
-            observer.unobserve(entry.target);
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
         }
-    });
-}, observerOptions);
+      });
+    },
+    { threshold: 0.18 }
+  );
 
-const reveals = document.querySelectorAll('.reveal');
-revealItems();
-
-function revealItems() {
-    reveals.forEach((el, index) => {
-        el.style.animationDelay = `${index * 0.1}s`;
-        observer.observe(el);
-    });
+  document.querySelectorAll(".reveal").forEach((item) => observer.observe(item));
 }
 
-const counters = document.querySelectorAll('.counter');
-counters.forEach(counter => observer.observe(counter));
+function initProjectFilters() {
+  filterButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      filterButtons.forEach((btn) => btn.classList.remove("active"));
+      button.classList.add("active");
+      const filter = button.getAttribute("data-filter");
 
-function animateCounter(counter) {
-    const target = Number(counter.getAttribute('data-target'));
-    let start = 0;
-    const duration = 1200;
-    const stepTime = 16;
-    const steps = duration / stepTime;
-    const increment = target / steps;
-
-    const timer = setInterval(() => {
-        start += increment;
-        if (start >= target) {
-            counter.textContent = target + (target === 100 ? '%' : '');
-            clearInterval(timer);
-            return;
-        }
-        counter.textContent = Math.floor(start) + (target === 100 ? '%' : '');
-    }, stepTime);
+      projectCards.forEach((card) => {
+        const category = card.getAttribute("data-category");
+        const shouldShow = filter === "all" || category === filter;
+        card.style.display = shouldShow ? "flex" : "none";
+      });
+    });
+  });
 }
 
-if (hireBtn && contactModal) {
-    hireBtn.addEventListener("click", function(e) {
-        e.preventDefault();
-        contactModal.style.display = "block";
-    });
-}
+function initFormHandling() {
+  if (!form) return;
 
-if (closeBtn && contactModal) {
-    closeBtn.addEventListener("click", function() {
-        contactModal.style.display = "none";
-    });
-}
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
 
-window.addEventListener("click", function(event) {
-    if (contactModal && event.target === contactModal) {
-        contactModal.style.display = "none";
-    }
-});
+    const formData = new FormData(form);
+    const name = formData.get("name")?.toString().trim() || "there";
+    const email = formData.get("email")?.toString().trim() || "";
+    const project = formData.get("project")?.toString().trim() || "portfolio discussion";
+    const message = formData.get("message")?.toString().trim() || "";
 
-function updateActiveMenuItem(sectionId) {
-    menuItems.forEach(item => {
-        item.classList.remove('active');
-        if (item.dataset.section === sectionId) {
-            item.classList.add('active');
-        }
-    });
-}
-
-const sectionObserverOptions = {
-    threshold: 0.3,
-    rootMargin: '-50px 0px -50px 0px'
-};
-
-const sectionObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            const sectionId = entry.target.id;
-            updateActiveMenuItem(sectionId);
-        }
-    });
-}, sectionObserverOptions);
-
-sections.forEach(section => {
-    sectionObserver.observe(section);
-});
-
-menuItems.forEach(item => {
-    item.addEventListener('click', () => {
-        const sectionId = item.dataset.section;
-        const targetSection = document.getElementById(sectionId);
-
-        if (targetSection) {
-            menuItems.forEach(menuItem => menuItem.classList.remove('active'));
-            item.classList.add('active');
-            item.style.transform = 'scale(0.95)';
-            setTimeout(() => {
-                item.style.transform = '';
-            }, 150);
-            targetSection.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start',
-                inline: 'nearest'
-            });
-        }
-    });
-});
-
-function toggleFloatingMenu() {
-    if (floatingMenu) {
-        floatingMenu.classList.remove('show');
-    }
-}
-
-toggleFloatingMenu();
-window.addEventListener('resize', toggleFloatingMenu);
-
-let scrollTimeout;
-window.addEventListener('scroll', () => {
-    const scrollTop = window.scrollY;
-    const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-    const progress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
-    if (scrollProgress) {
-        scrollProgress.style.width = `${progress}%`;
+    if (!email || !message) {
+      formStatus.textContent = "Please add your email and a short message.";
+      return;
     }
 
-    if (backToTop) {
-        backToTop.classList.toggle('show', scrollTop > 400);
-    }
+    const mailtoLink = `mailto:manish2003ban@gmail.com?subject=${encodeURIComponent(`Portfolio contact from ${name} • ${project}`)}&body=${encodeURIComponent(`Name: ${name}\nEmail: ${email}\nProject: ${project}\n\n${message}`)}`;
+    window.location.href = mailtoLink;
+    form.reset();
+    formStatus.textContent = "Thanks! Your email app should open with a prefilled message.";
+  });
+}
 
-    clearTimeout(scrollTimeout);
-    scrollTimeout = setTimeout(() => {
-        const scrollPosition = window.scrollY + 100;
-        sections.forEach(section => {
-            const sectionTop = section.offsetTop;
-            const sectionHeight = section.offsetHeight;
-            if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
-                updateActiveMenuItem(section.getAttribute('id'));
-            }
-        });
-    }, 50);
+function updateScrollProgress() {
+  const scrollTop = window.scrollY;
+  const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const progress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+  if (scrollProgress) {
+    scrollProgress.style.width = `${progress}%`;
+  }
+
+  if (backToTop) {
+    backToTop.style.opacity = scrollTop > 360 ? "1" : "0";
+    backToTop.style.pointerEvents = scrollTop > 360 ? "auto" : "none";
+  }
+}
+
+function initCursorGlow() {
+  if (!cursorGlow) return;
+
+  window.addEventListener("mousemove", (event) => {
+    cursorGlow.style.left = `${event.clientX}px`;
+    cursorGlow.style.top = `${event.clientY}px`;
+  });
+}
+
+hamburger?.addEventListener("click", toggleMobileMenu);
+
+navLinks?.querySelectorAll("a").forEach((link) => {
+  link.addEventListener("click", closeMobileMenu);
 });
 
-if (backToTop) {
-    backToTop.addEventListener('click', () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-}
+themeToggle?.addEventListener("click", () => {
+  const isLight = document.body.classList.contains("light-theme");
+  setTheme(isLight ? "dark" : "light");
+});
+
+backToTop?.addEventListener("click", () => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+window.addEventListener("scroll", updateScrollProgress, { passive: true });
+window.addEventListener("resize", () => {
+  if (window.innerWidth > 760) closeMobileMenu();
+});
+
+initTheme();
+initTypingEffect();
+initRevealObserver();
+initProjectFilters();
+initFormHandling();
+initCursorGlow();
+updateScrollProgress();
