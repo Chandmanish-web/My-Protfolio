@@ -1,21 +1,45 @@
-// Hamburger Menu Toggle
 const hamburger = document.getElementById("hamburger");
 const navLinks = document.getElementById("navLinks");
+const themeToggle = document.getElementById("themeToggle");
+const themeIcon = document.getElementById("themeIcon");
+const scrollProgress = document.getElementById("scrollProgress");
+const backToTop = document.getElementById("backToTop");
+const hireBtn = document.getElementById("hireBtn");
+const contactModal = document.getElementById("contactModal");
+const closeBtn = document.querySelector(".close");
+const floatingMenu = document.getElementById('floatingMenu');
+const menuItems = document.querySelectorAll('.menu-item');
+const sections = document.querySelectorAll('section[id], header[id]');
 
-hamburger.addEventListener("click", function() {
-    hamburger.classList.toggle("active");
-    navLinks.classList.toggle("active");
-});
-
-// Close menu when a link is clicked
-navLinks.querySelectorAll("a").forEach(link => {
-    link.addEventListener("click", function() {
-        hamburger.classList.remove("active");
-        navLinks.classList.remove("active");
+if (hamburger && navLinks) {
+    hamburger.addEventListener("click", function() {
+        hamburger.classList.toggle("active");
+        navLinks.classList.toggle("active");
     });
-});
 
-// Enhanced Reveal Animation with Intersection Observer
+    navLinks.querySelectorAll("a").forEach(link => {
+        link.addEventListener("click", function() {
+            hamburger.classList.remove("active");
+            navLinks.classList.remove("active");
+        });
+    });
+}
+
+if (themeToggle && themeIcon) {
+    const storedTheme = localStorage.getItem('portfolio-theme');
+    if (storedTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+        themeIcon.className = 'fas fa-sun';
+    }
+
+    themeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('dark-theme');
+        const isDark = document.body.classList.contains('dark-theme');
+        themeIcon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+        localStorage.setItem('portfolio-theme', isDark ? 'dark' : 'light');
+    });
+}
+
 const observerOptions = {
     threshold: 0.1,
     rootMargin: '0px 0px -50px 0px'
@@ -25,61 +49,74 @@ const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             entry.target.classList.add('active');
+            if (entry.target.classList.contains('counter')) {
+                animateCounter(entry.target);
+            }
             observer.unobserve(entry.target);
         }
     });
 }, observerOptions);
 
-// Observe all reveal elements
-document.querySelectorAll('.reveal').forEach(el => {
-    observer.observe(el);
-});
+const reveals = document.querySelectorAll('.reveal');
+revealItems();
 
-// Smooth scroll animation
-document.addEventListener('DOMContentLoaded', () => {
-    const reveals = document.querySelectorAll('.reveal');
+function revealItems() {
     reveals.forEach((el, index) => {
         el.style.animationDelay = `${index * 0.1}s`;
+        observer.observe(el);
     });
-});
+}
 
-// Add staggered animation to edu-cards
-const eduCards = document.querySelectorAll('.edu-card');
-eduCards.forEach((card, index) => {
-    card.style.animationDelay = `${index * 0.15}s`;
-});
+const counters = document.querySelectorAll('.counter');
+counters.forEach(counter => observer.observe(counter));
 
-// Add staggered animation to project cards
-const projectCards = document.querySelectorAll('.p-card');
-projectCards.forEach((card, index) => {
-    card.style.animationDelay = `${index * 0.12}s`;
-});
+function animateCounter(counter) {
+    const target = Number(counter.getAttribute('data-target'));
+    let start = 0;
+    const duration = 1200;
+    const stepTime = 16;
+    const steps = duration / stepTime;
+    const increment = target / steps;
 
-const hireBtn = document.getElementById("hireBtn");
-const contactModal = document.getElementById("contactModal");
-const closeBtn = document.querySelector(".close");
+    const timer = setInterval(() => {
+        start += increment;
+        if (start >= target) {
+            counter.textContent = target + (target === 100 ? '%' : '');
+            clearInterval(timer);
+            return;
+        }
+        counter.textContent = Math.floor(start) + (target === 100 ? '%' : '');
+    }, stepTime);
+}
 
-hireBtn.addEventListener("click", function(e) {
-    e.preventDefault();
-    contactModal.style.display = "block";
-});
+if (hireBtn && contactModal) {
+    hireBtn.addEventListener("click", function(e) {
+        e.preventDefault();
+        contactModal.style.display = "block";
+    });
+}
 
-closeBtn.addEventListener("click", function() {
-    contactModal.style.display = "none";
-});
+if (closeBtn && contactModal) {
+    closeBtn.addEventListener("click", function() {
+        contactModal.style.display = "none";
+    });
+}
 
 window.addEventListener("click", function(event) {
-    if (event.target === contactModal) {
+    if (contactModal && event.target === contactModal) {
         contactModal.style.display = "none";
     }
 });
 
-// Floating Menu Functionality
-const floatingMenu = document.getElementById('floatingMenu');
-const menuItems = document.querySelectorAll('.menu-item');
+function updateActiveMenuItem(sectionId) {
+    menuItems.forEach(item => {
+        item.classList.remove('active');
+        if (item.dataset.section === sectionId) {
+            item.classList.add('active');
+        }
+    });
+}
 
-// Section highlighting based on scroll position
-const sections = document.querySelectorAll('section[id], header[id]');
 const sectionObserverOptions = {
     threshold: 0.3,
     rootMargin: '-50px 0px -50px 0px'
@@ -94,38 +131,22 @@ const sectionObserver = new IntersectionObserver((entries) => {
     });
 }, sectionObserverOptions);
 
-// Observe all sections
 sections.forEach(section => {
     sectionObserver.observe(section);
 });
 
-function updateActiveMenuItem(sectionId) {
-    menuItems.forEach(item => {
-        item.classList.remove('active');
-        if (item.dataset.section === sectionId) {
-            item.classList.add('active');
-        }
-    });
-}
-
-// Menu item click handlers
 menuItems.forEach(item => {
     item.addEventListener('click', () => {
         const sectionId = item.dataset.section;
         const targetSection = document.getElementById(sectionId);
-        
+
         if (targetSection) {
-            // Update active state
             menuItems.forEach(menuItem => menuItem.classList.remove('active'));
             item.classList.add('active');
-            
-            // Add click animation
             item.style.transform = 'scale(0.95)';
             setTimeout(() => {
                 item.style.transform = '';
             }, 150);
-            
-            // Smooth scroll to section
             targetSection.scrollIntoView({
                 behavior: 'smooth',
                 block: 'start',
@@ -135,34 +156,43 @@ menuItems.forEach(item => {
     });
 });
 
-// Show/hide floating menu based on screen size
 function toggleFloatingMenu() {
-    // Floating menu is now hidden on mobile devices
-    if (window.innerWidth <= 768) {
-        floatingMenu.classList.remove('show');
-    } else {
+    if (floatingMenu) {
         floatingMenu.classList.remove('show');
     }
 }
 
-// Initial check and resize listener
 toggleFloatingMenu();
 window.addEventListener('resize', toggleFloatingMenu);
 
-// Handle scroll to update active menu item
 let scrollTimeout;
 window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
+    if (scrollProgress) {
+        scrollProgress.style.width = `${progress}%`;
+    }
+
+    if (backToTop) {
+        backToTop.classList.toggle('show', scrollTop > 400);
+    }
+
     clearTimeout(scrollTimeout);
     scrollTimeout = setTimeout(() => {
         const scrollPosition = window.scrollY + 100;
-        
         sections.forEach(section => {
             const sectionTop = section.offsetTop;
             const sectionHeight = section.offsetHeight;
-            
             if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
                 updateActiveMenuItem(section.getAttribute('id'));
             }
         });
     }, 50);
 });
+
+if (backToTop) {
+    backToTop.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+}
