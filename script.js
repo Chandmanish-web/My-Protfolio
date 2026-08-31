@@ -13,6 +13,8 @@ const cursorGlow = document.querySelector(".cursor-glow");
 
 const roles = ["React", "Node.js", "Python", "beautiful interfaces", "practical products"];
 let roleIndex = 0;
+const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const isCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
 
 function setTheme(theme) {
   document.body.classList.toggle("light-theme", theme === "light");
@@ -121,12 +123,24 @@ function updateScrollProgress() {
 }
 
 function initCursorGlow() {
-  if (!cursorGlow) return;
+  if (!cursorGlow || prefersReducedMotion || isCoarsePointer) {
+    if (cursorGlow) cursorGlow.style.display = "none";
+    return;
+  }
 
-  window.addEventListener("mousemove", (event) => {
-    cursorGlow.style.left = `${event.clientX}px`;
-    cursorGlow.style.top = `${event.clientY}px`;
-  });
+  let frameId = null;
+
+  const updateGlow = (event) => {
+    if (frameId) return;
+
+    frameId = requestAnimationFrame(() => {
+      cursorGlow.style.left = `${event.clientX}px`;
+      cursorGlow.style.top = `${event.clientY}px`;
+      frameId = null;
+    });
+  };
+
+  window.addEventListener("mousemove", updateGlow, { passive: true });
 }
 
 hamburger?.addEventListener("click", toggleMobileMenu);
